@@ -1,6 +1,8 @@
 package com.sskim;
 
+import com.querydsl.core.BooleanBuilder;
 import com.sskim.domain.Board;
+import com.sskim.domain.QBoard;
 import com.sskim.persistence.BoardRepository;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -194,4 +196,34 @@ public class BoardRepositoryTests {
                 .forEach(board -> System.out.println(board));
     }
 
+    @Test
+    public void predicate_생성및테스트() {
+        String type = "t";
+        String keyword = "17";
+
+        BooleanBuilder builder = new BooleanBuilder();
+
+        //Maven - Genrate..
+        QBoard board = QBoard.board;
+
+        if (type.equals("t")) {
+            builder.and(board.title.like("%" + keyword + "%"));
+        }
+
+        //bno > 0
+        builder.and(board.bno.gt(0L));
+
+        Pageable pageable = new PageRequest(0, 10);
+
+        Page<Board> result = boardRepository.findAll(builder, pageable);
+
+        System.out.println("PAGE SIZE : " + result.getSize());
+        System.out.println("TOTAL PAGE : " + result.getTotalPages());
+        System.out.println("TOTAL COUNT : " + result.getTotalElements());
+        System.out.println("NEXT : " + result.nextPageable());
+
+        List<Board> list = result.getContent();
+
+        list.forEach(b -> System.out.println(b));
+    }
 }
